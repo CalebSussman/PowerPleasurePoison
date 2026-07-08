@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Power, Pleasure, and Poison Reframing App
 
-## Getting Started
+Next.js App Router MVP for managing the reframing/redraft of the book project.
 
-First, run the development server:
+## What It Does
+
+- Dashboard table for the full B1-B55 book structure.
+- Dedicated block pages with `Overview`, `Sources`, `Map`, and `Text` tabs.
+- Supabase schema for sections, chapters, blocks, Zotero sources, block/source joins, map nodes/edges, drafts, notes, and sync runs.
+- Server-only Zotero sync route at `POST /api/sync/zotero`.
+- React Flow blackboard map with saved nodes and edges.
+- Draft text editor with explicit save and revision count.
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy env vars:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Fill in `.env.local`.
+
+Required for live Supabase:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://vwixeanrtymkdhpybhbg.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable key>
+SUPABASE_SERVICE_ROLE_KEY=<service role key, server only>
+```
+
+Required for Zotero sync:
+
+```bash
+ZOTERO_API_KEY=<zotero key>
+ZOTERO_LIBRARY_ID=<numeric user or group library id>
+ZOTERO_LIBRARY_TYPE=user
+```
+
+Optional write protection:
+
+```bash
+APP_ADMIN_TOKEN=<shared local admin token>
+```
+
+If `APP_ADMIN_TOKEN` is set, enter it in the write-token box in the app before saving drafts, saving maps, attaching sources, detaching sources, or syncing Zotero.
+
+## Database
+
+Apply:
+
+- `supabase/migrations/001_initial_schema.sql`
+- `supabase/seed/001_reframing_blocks.sql`
+
+The migration enables RLS on all public tables and grants read access to `anon`/`authenticated`. Mutations are intended to flow through Next.js server routes using `SUPABASE_SERVICE_ROLE_KEY`; do not expose service-role keys in browser env vars.
+
+The seed is generated from:
+
+```bash
+../Thesis Redraft/Planning/Revised_Reframing.md
+```
+
+Regenerate it after planning-file edits:
+
+```bash
+npm run seed:generate
+```
+
+## Local Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without Supabase env vars, the dashboard and block overview pages use the generated local seed data. Source, map, and draft persistence require Supabase.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set the same env vars in Vercel Project Settings. Only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are browser-exposed. Keep `SUPABASE_SERVICE_ROLE_KEY` and `ZOTERO_API_KEY` server-only.
 
-## Learn More
+Deploy:
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+vercel
+```
