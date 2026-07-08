@@ -80,6 +80,35 @@ npm run dev
 
 Without Supabase env vars, the dashboard and block overview pages use the generated local seed data. Source, map, and draft persistence require Supabase.
 
+## AI Gateway
+
+This project includes a server-side smoke endpoint at:
+
+```bash
+POST /api/ai-gateway/smoke
+```
+
+It uses the Vercel AI SDK with `provider/model` routing through AI Gateway. Configure one of:
+
+```bash
+AI_GATEWAY_API_KEY=<static gateway key>
+VERCEL_OIDC_TOKEN=<from vercel env pull>
+AI_GATEWAY_MODEL=openai/gpt-5.5
+```
+
+Local script:
+
+```bash
+npm run ai:smoke -- "Explain quantum computing in simple terms."
+```
+
+If using Vercel OIDC locally:
+
+```bash
+vercel link
+vercel env pull .env.local
+```
+
 ## Vercel
 
 Set the same env vars in Vercel Project Settings. Only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are browser-exposed. Keep `SUPABASE_SERVICE_ROLE_KEY` and `ZOTERO_API_KEY` server-only.
